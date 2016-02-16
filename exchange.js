@@ -23,14 +23,6 @@ let failed_attempts = 0;
 let successful_attempts = 0;
 let client = new bs.Client(config.bs.host + ':' + config.bs.port);
 
-let job = {
-	type: 'exchange',
-	payload: {
-		'from': 'USD',
-		'to': 'HKD'
-	}
-};
-
 let rateSchema = mongoose.Schema({
 	'from': String,
 	'to': String,
@@ -80,7 +72,7 @@ function seed() {
 	// use the right tube and put jobs in the queue
 	client.use(config.bs.tube).onSuccess(function (tube) {
 		console.log(tube);
-		client.put(JSON.stringify(job), 0, 0, 0).onSuccess(function (job_id) {
+		client.put(JSON.stringify(config.job), 0, 0, 0).onSuccess(function (job_id) {
 			console.log(job_id);
 		});
 	});
@@ -114,7 +106,7 @@ function worker() {
 				if (successful_attempts < 10) {
 					// put the job back into beanstalk after 60 seconds
 					setTimeout(function () {
-						client.put(JSON.stringify(job)).onSuccess(function (job_id) {
+						client.put(JSON.stringify(config.job)).onSuccess(function (job_id) {
 							console.log(job_id);
 							worker();
 						});
@@ -126,7 +118,7 @@ function worker() {
 				if (failed_attempts < 3) {
 					// put the job back into beanstalk after 3 seconds
 					setTimeout(function () {
-						client.put(JSON.stringify(job)).onSuccess(function (job_id) {
+						client.put(JSON.stringify(config.job)).onSuccess(function (job_id) {
 							console.log(job_id);
 							worker();
 						});

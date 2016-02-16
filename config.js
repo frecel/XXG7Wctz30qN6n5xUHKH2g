@@ -1,5 +1,14 @@
 'use strict';
-// configuration
+// job
+exports.job = {
+	type: 'exchange',
+	payload: {
+		'from': 'USD',
+		'to': 'HKD'
+	}
+};
+
+// beanstalk
 exports.bs = {
 	host: '127.0.0.1',
 	port: 12701,
